@@ -5,8 +5,8 @@ from model import *
 from retrieval import retrieve_translation_pieces
 from tqdm import tqdm
 
-def decode_python_dataset(model, train_data, dev_data, test_data, dataset_type="test_data", retrieval=False, verbose=True):
-    dataset = eval(dataset_type)
+def decode_python_dataset(model, dataset, dataset_type="test_data", retrieval=False, verbose=True):
+    # dataset = eval(dataset_type)
     from lang.py.parse import decode_tree_to_python_ast
     if verbose:
         logging.info('decoding [%s] set, num. examples: %d', dataset.name, dataset.count)
