@@ -1,4 +1,4 @@
-output="../../files/runs"
+output="./data/runs"
 device="cpu"
 
 if [ "$1" == "hs" ]; then
@@ -10,15 +10,15 @@ if [ "$1" == "hs" ]; then
 else
 	# django dataset
 	echo "training django dataset"
-	dataset="django.cleaned.dataset.freq5.par_info.refact.space_only.bin"
-	commandline="-batch_size 10 -max_epoch 50 -valid_per_batch 4000 -save_per_batch 4000 -decode_max_time_step 100 -optimizer adam -rule_embed_dim 128 -node_embed_dim 64 -valid_metric bleu"
+	dataset="django.cleaned.dataset.freq3.par_info.refact.space_only.order_by_ulink_len.bin"    # "django.cleaned.dataset.freq5.par_info.refact.space_only.bin"
+	commandline="-batch_size 10 -max_epoch 50 -valid_per_batch 1000 -save_per_batch 500 -decode_max_time_step 100 -optimizer adam -rule_embed_dim 128 -node_embed_dim 64 -valid_metric bleu -enable_retrieval -use_alignment -beam_size 5"
 	datatype="django"
 fi
 
 # train the model
 THEANO_FLAGS="mode=FAST_RUN,device=${device},floatX=float32" python -u code_gen.py \
 	-data_type ${datatype} \
-	-data ../../files/${dataset} \
+	-data ./data/${dataset} \
 	-output_dir ${output} \
 	${commandline} \
 	train
@@ -27,7 +27,7 @@ THEANO_FLAGS="mode=FAST_RUN,device=${device},floatX=float32" python -u code_gen.
 for model in "model.best_bleu.npz" "model.best_acc.npz"; do
 	THEANO_FLAGS="mode=FAST_RUN,device=${device},floatX=float32" python code_gen.py \
 	-data_type ${datatype} \
-	-data ../../files/${dataset} \
+	-data ./data/${dataset} \
 	-output_dir ${output} \
 	-model ${output}/${model} \
 	${commandline} \
@@ -36,7 +36,7 @@ for model in "model.best_bleu.npz" "model.best_acc.npz"; do
 
 	python code_gen.py \
 		-data_type ${datatype} \
-		-data ../../files/${dataset} \
+		-data ./data/${dataset} \
 		-output_dir ${output} \
 		evaluate \
 		-input ${output}/${model}.decode_results.test.bin
