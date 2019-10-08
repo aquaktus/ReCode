@@ -38,6 +38,7 @@ class Action(object):
         data_str = self.data if not isinstance(self.data, dict) else \
             ', '.join(['%s: %s' % (k, v) for k, v in self.data.iteritems()])
         repr_str = 'Action{%s}[%s]' % (ACTION_NAMES[self.act_type], data_str)
+        
 
         return repr_str
 
@@ -114,6 +115,7 @@ def gen_vocab(tokens, vocab_size=3000, freq_cutoff=5):
         word_freq[token] += 1
 
     print 'total num. of tokens: %d' % len(word_freq)
+    
 
     words_freq_cutoff = [w for w in word_freq if word_freq[w] >= freq_cutoff]
     print 'num. of words appear at least %d: %d' % (freq_cutoff, len(words_freq_cutoff))
@@ -241,6 +243,8 @@ class DataSet:
             exg_query_tokens = example.query[:max_query_length]
             exg_action_seq = example.actions[:max_example_action_num]
 
+            print exg_query_tokens
+
             for tid, token in enumerate(exg_query_tokens):
                 token_id = annot_vocab[token]
 
@@ -300,11 +304,11 @@ class DataHelper(object):
 def parse_django_dataset_nt_only():
     from parse import parse_django
 
-    annot_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.anno'
+    annot_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/all.anno'
 
     vocab = gen_vocab(annot_file, vocab_size=4500)
 
-    code_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.code'
+    code_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/all.code'
 
     grammar, all_parse_trees = parse_django(code_file)
 
@@ -314,7 +318,7 @@ def parse_django_dataset_nt_only():
 
     # train_data
 
-    train_annot_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/train.anno'
+    train_annot_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/train.anno'
     train_parse_trees = all_parse_trees[0:16000]
     for line, parse_tree in zip(open(train_annot_file), train_parse_trees):
         if parse_tree.is_leaf:
@@ -330,7 +334,7 @@ def parse_django_dataset_nt_only():
 
     # dev_data
 
-    dev_annot_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/dev.anno'
+    dev_annot_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/dev.anno'
     dev_parse_trees = all_parse_trees[16000:17000]
     for line, parse_tree in zip(open(dev_annot_file), dev_parse_trees):
         if parse_tree.is_leaf:
@@ -346,7 +350,7 @@ def parse_django_dataset_nt_only():
 
     # test_data
 
-    test_annot_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/test.anno'
+    test_annot_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/test.anno'
     test_parse_trees = all_parse_trees[17000:18805]
     for line, parse_tree in zip(open(test_annot_file), test_parse_trees):
         if parse_tree.is_leaf:
@@ -369,8 +373,8 @@ def parse_django_dataset():
     MAX_QUERY_LENGTH = 70
     UNARY_CUTOFF_FREQ = 30
 
-    annot_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.anno'
-    code_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.code'
+    annot_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/all.anno'
+    code_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/all.code'
 
     data = preprocess_dataset(annot_file, code_file)
 
@@ -398,7 +402,7 @@ def parse_django_dataset():
 
     annot_tokens = list(chain(*[e['query_tokens'] for e in data]))
     # gen_vocab(annot_tokens, vocab_size=5980)
-    annot_vocab = gen_vocab(annot_tokens, vocab_size=5000, freq_cutoff=3)
+    annot_vocab = gen_vocab(annot_tokens, vocab_size=5000, freq_cutoff=5)
 
     terminal_token_seq = []
     empty_actions_count = 0
@@ -436,7 +440,7 @@ def parse_django_dataset():
                     assert len(terminal_token) > 0
                     terminal_token_seq.append(terminal_token)
 
-    terminal_vocab = gen_vocab(terminal_token_seq, vocab_size=5000, freq_cutoff=3)
+    terminal_vocab = gen_vocab(terminal_token_seq, vocab_size=5000, freq_cutoff=5)
     assert '_STR:0_' in terminal_vocab
 
     train_data = DataSet(annot_vocab, terminal_vocab, grammar, 'train_data')
@@ -569,8 +573,8 @@ def parse_django_dataset():
 def check_terminals():
     from parse import parse_django, unescape
     grammar, parse_trees = parse_django(
-        '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.code')
-    annot_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.anno'
+        '/Users/carlosgemmell/Documents/projects/ReCode/data/all.code')
+    annot_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/all.anno'
 
     unique_terminals = set()
     invalid_terminals = set()
@@ -800,8 +804,8 @@ if __name__ == '__main__':
     from nn.utils.generic_utils import init_logging
     init_logging('parse.log')
 
-    # annot_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.anno'
-    # code_file = '/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.code'
+    # annot_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/all.anno'
+    # code_file = '/Users/carlosgemmell/Documents/projects/ReCode/data/all.code'
 
     # preprocess_dataset(annot_file, code_file)
 
@@ -810,7 +814,7 @@ if __name__ == '__main__':
 
     # print process_query(""" ALLOWED_VARIABLE_CHARS is a string 'abcdefgh"ijklm" nop"%s"qrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.'.""")
 
-    # for i, query in enumerate(open('/Users/yinpengcheng/Research/SemanticParsing/CodeGeneration/en-django/all.anno')):
+    # for i, query in enumerate(open('/Users/carlosgemmell/Documents/projects/ReCode/data/all.anno')):
     #     print i, process_query(query)
 
     # clean_dataset()
