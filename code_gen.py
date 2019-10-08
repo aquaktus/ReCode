@@ -5,7 +5,7 @@ import traceback
 import argparse
 import os
 import logging
-from vprof import profiler
+# from vprof import profiler
 
 from model import Model
 from dataset import DataEntry, DataSet, Vocab, Action
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     logging.info('command line: %s', ' '.join(sys.argv))
 
     logging.info('loading dataset [%s]', args.data)
-    train_data, dev_data, test_data = deserialize_from_file(args.data)
+    train_data, dev_data, test_data = deserialize_from_file(args.data)  # getting the data from the zipped file format
     if not args.source_vocab_size:
         args.source_vocab_size = train_data.annot_vocab.size
     if not args.target_vocab_size:
