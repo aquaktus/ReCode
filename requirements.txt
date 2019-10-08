@@ -1,0 +1,9 @@
+astor==0.8.0
+h5py==2.10.0
+nltk==3.4.5
+numpy==1.16.5
+scipy==1.2.2
+singledispatch==3.4.0.3
+six==1.12.0
+Theano==1.0.4
+tqdm==4.36.1
